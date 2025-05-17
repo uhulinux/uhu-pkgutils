@@ -1,0 +1,119 @@
+rezso | 2017-12-11
+
+- add uhu-reposign
+1.2.0
+------------------------------------------------------------------------
+r37 | egmont | 2005-08-31 16:09:55 +0200 (sze, 31 aug 2005) | 1 line
+Changed paths:
+   A /tags/1.1.8 (from /trunk:36)
+
+1.1.8
+------------------------------------------------------------------------
+r36 | egmont | 2005-08-31 16:09:53 +0200 (sze, 31 aug 2005) | 2 lines
+Changed paths:
+   M /trunk/src/uhu-mvoldpkgs
+
+- UTF-8
+
+------------------------------------------------------------------------
+r35 | pozsy | 2005-08-08 17:38:06 +0200 (h, 08 aug 2005) | 2 lines
+Changed paths:
+   M /trunk/src/uhu-scanpkgs
+
+- fix rescan when size mismatch detected
+
+------------------------------------------------------------------------
+r33 | pozsy | 2004-12-19 00:58:47 +0100 (v, 19 dec 2004) | 2 lines
+Changed paths:
+   M /trunk/src/uhu-scanpkgs
+
+- generate contents.gz (-c option)
+
+------------------------------------------------------------------------
+r31 | egmont | 2004-09-15 16:12:43 +0200 (sze, 15 szept 2004) | 2 lines
+Changed paths:
+   M /trunk/src/uhu-scanpkgs
+
+- uhu-scanpkgs: force en_US locale so that foo_1.2 < foo-dev_1.2
+
+------------------------------------------------------------------------
+r29 | egmont | 2004-09-15 15:37:18 +0200 (sze, 15 szept 2004) | 2 lines
+Changed paths:
+   A /trunk/src/uhu-gencontentsgz
+
+- add uhu-gencontentsgz
+
+------------------------------------------------------------------------
+r27 | pozsy | 2004-08-23 11:08:37 +0200 (h, 23 aug 2004) | 4 lines
+Changed paths:
+   M /trunk/src/uhu-scanpkgs
+
+- option parsing
+- recursive dir scan
+- filter option
+
+------------------------------------------------------------------------
+r25 | egmont | 2004-06-10 17:15:40 +0200 (cs, 10 jún 2004) | 2 lines
+Changed paths:
+   A /trunk/src/uhu-cmppkg
+
+- add uhu-cmppkg
+
+------------------------------------------------------------------------
+r23 | egmont | 2004-06-10 14:32:48 +0200 (cs, 10 jún 2004) | 3 lines
+Changed paths:
+   M /trunk/src/uhu-scanpkgs
+
+- small bugfix
+- remove temporary files in case of failure
+
+------------------------------------------------------------------------
+r21 | pozsy | 2004-06-09 09:44:52 +0200 (sze, 09 jún 2004) | 2 lines
+Changed paths:
+   M /trunk/src/uhu-scanpkgs
+
+- try to recognise and fix corrupted Packages files
+
+------------------------------------------------------------------------
+r19 | egmont | 2004-05-27 17:00:08 +0200 (cs, 27 máj 2004) | 2 lines
+Changed paths:
+   M /trunk/src/uhu-scanpkgs
+
+- uhu-scanpkgs rewritten from scratch
+
+------------------------------------------------------------------------
+r17 | egmont | 2004-05-16 11:47:47 +0200 (v, 16 máj 2004) | 3 lines
+Changed paths:
+   M /trunk/src/uhu-scanpkgs
+
+- fetch Distribution and Vendor from the last package in Packages
+  instead of the first one
+
+------------------------------------------------------------------------
+r15 | pozsy | 2003-09-01 15:27:09 +0200 (h, 01 szept 2003) | 4 lines
+Changed paths:
+   M /trunk/src/uhu-scanpkgs
+
+generate Release & Contents.gz
+sha1sum support
+cleanup
+
+------------------------------------------------------------------------
+r13 | pozsy | 2003-07-19 20:14:14 +0200 (szo, 19 júl 2003) | 1 line
+Changed paths:
+   D /trunk/VERSION
+
+remove VERSION
+------------------------------------------------------------------------
+r12 | pozsy | 2003-07-19 13:30:54 +0200 (szo, 19 júl 2003) | 1 line
+Changed paths:
+   D /VERSION
+   A /branches
+   D /src
+   A /tags
+   A /trunk
+   A /trunk/VERSION (from /VERSION:11)
+   A /trunk/src (from /src:11)
+
+new repository layout
+------------------------------------------------------------------------

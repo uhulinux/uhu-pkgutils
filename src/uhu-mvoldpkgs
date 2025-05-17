@@ -1,0 +1,36 @@
+#!/bin/sh -e
+
+[ "$#" == "2" ] || {
+	echo "usage: $(basename "$0") <dir> <backup_dir>" >&2
+	exit 1
+}
+
+F="$(mktemp)"
+
+[ -f "$F" ] || {
+	echo "nem sikerült az mktemp" >&2
+	exit 1
+}
+
+find "$1/" -name "*.uhu" -type f | cut -d_ -s -f1 | sort | uniq -d | while read pkg; do
+	unset mf || true
+	unset mv || true
+	pkg="${pkg##*/}"
+	find "$1/" -name "${pkg}_*.uhu" >"$F"
+	while read f; do
+		if [ -n "$mf" ]; then
+			if dpkg --compare-versions "$(echo $f|cut -d_ -f2)" lt "$mv"; then
+				mv -vb "$f" "$2/"
+			else
+				mv -vb "$mf" "$2/"
+				mf="$f"
+				mv="$(echo $mf|cut -d_ -f2)"
+			fi
+		else
+			mf="$f"
+			mv="$(echo $mf|cut -d_ -f2)"
+		fi
+	done <"$F"
+done
+
+rm -f "$F"

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+if [ $# -lt 2 ]; then
+	echo "Usage: $(basename "$0") <distribution> <arch> [gpgkey]" >&2
+	exit 1
+fi
+
+if [ $# -eq 3 ]; then
+BUILD_GPGKEY=$3
+fi
+
+uhu-scanpkgs .
+
+rm -f Release.gpg
+
+apt-ftparchive release . \
+	-o APT::FTPArchive::Release::Origin="UHU Linux Baráti Kör" \
+	-o APT::FTPArchive::Release::Label="UHU-Linux" \
+	-o APT::FTPArchive::Release::Version="$1" \
+	-o APT::FTPArchive::Release::Architectures="$2" \
+	> ./Release  
+gpg --default-key $BUILD_GPGKEY --armor --detach-sign --sign --output \
+		./Release.gpg ./Release

@@ -1,0 +1,119 @@
+#!/usr/bin/perl
+
+use strict;
+
+use Digest::SHA qw(sha256_hex);
+use POSIX;
+use IO::Handle;
+use Getopt::Long;
+use locale;
+
+my @old = ({});
+my %info;
+my $current = "";
+my $last;
+my @includeonly;
+my %includeonly;
+
+my %options;
+Getopt::Long::Configure "bundling";
+GetOptions \%options, 'contents|c!', 'only|o=s@';
+
+setlocale(LC_ALL, "en_US");
+
+if ($options{only}) {
+	local @ARGV = @{$options{only}};
+	@includeonly = <>;
+	chomp @includeonly;
+	$includeonly{$_} = 1 for (@includeonly);
+}
+
+my @dirs = @ARGV ? @ARGV : ('.');
+
+sub debug {
+	print STDERR (join '',@_)."\n";
+}
+
+# parse existing Packages files
+open PACKAGES, '<:raw', 'Packages';
+while (<PACKAGES>) {
+	if (/^( .+)/) {
+		$old[@old-1]{$last} .= "\n".$1;
+	} elsif (/^([^:]+):(.*)/) {
+		$last = $1;
+		$old[@old-1]{_} = [@{$old[@old-1]{_} or []}, $last];
+		$old[@old-1]{$last} = $2;
+	} elsif (/^$/) {
+		$old[@old] = {};
+	}
+}
+close PACKAGES;
+
+for (@dirs) {
+	for (< $_/* >) {
+		push @dirs, $_ if -d $_;
+	}
+}
+
+# scan for packages
+for (@dirs) {
+	for (< $_/*.uhu >) {
+		s%^\./%%;
+		$info{$_} = {
+			Filename => $_,
+			Size => 0,
+		}
+	}
+}
+
+# merge data
+for (@old) {
+	my $f = $_->{Filename};
+	$f =~ s%^ %%;
+	$info{$f} = $_ if $info{$f} and $_->{Package};
+}
+
+# update and print data
+open PACKAGES, '>:raw', '.Packages.tmp.'.$$;
+STDOUT->fdopen(\*PACKAGES, 'w');
+for (sort keys %info) {
+	if ($options{only}) {
+		local $_ = $_;
+		s|_.*||;
+		s|.*/||;
+		next unless $includeonly{$_};
+	}
+	if ($info{$_}{Size} == -s $_) {
+		my $pkg = $_;
+		for (@{$info{$pkg}{_}}) {
+			print $_.":".$info{$pkg}{$_}."\n";
+		}
+	} else {
+		$info{$_}{Filename} =~ s%^ %%;
+		next unless -f $info{$_}{Filename};
+		system 'dpkg-deb', '-I', $info{$_}{Filename}, 'control';
+		print "Filename: ".$info{$_}{Filename}."\n";
+		print "Size: ".(-s $info{$_}{Filename})."\n";
+		my $sha256 = Digest::SHA->new(256);
+		open FILE, $info{$_}{Filename};
+		binmode FILE;
+		print "SHA256: ".$sha256->addfile(*FILE)->hexdigest."\n";
+	}
+	print "\n";
+}
+close PACKAGES;
+system 'mv', '-f', '.Packages.tmp.'.$$, 'Packages';
+
+# create Packages.gz
+open PACKAGESGZ, '>:raw', '.Packages.gz.tmp.'.$$;
+STDOUT->fdopen(\*PACKAGESGZ, 'w');
+system 'gzip', '-9cn', '--rsyncable', 'Packages';
+close PACKAGESGZ;
+system 'mv', '-f', '.Packages.gz.tmp.'.$$, 'Packages.gz';
+
+system 'uhu-gencontentsgz', sort keys %info if $options{contents};
+
+END {
+	unlink '.Packages.tmp.'.$$;
+	unlink '.Packages.gz.tmp.'.$$;
+}

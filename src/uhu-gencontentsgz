@@ -1,0 +1,17 @@
+#!/bin/bash -e
+
+if [ $# = 0 ]; then
+	echo "usage: $(basename "$0") packages..." >&2
+	exit 1
+fi
+
+trap 'rm -f Contents.gz.tmp' EXIT
+
+for pkg; do
+	name="${pkg##*/}"
+	name="${name%%_*}"
+	dpkg -I "$pkg" stat | \
+	cut -c 3-6,18-21,30-37,46-54,66- | \
+	sed "s/^/$name: /"
+done | gzip -9cn --rsyncable >Contents.gz.tmp
+mv Contents.gz.tmp Contents.gz

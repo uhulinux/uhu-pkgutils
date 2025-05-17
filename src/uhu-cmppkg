@@ -1,0 +1,33 @@
+#!/bin/bash -e
+
+if [ $# != 2 ]; then
+	echo 'Usage: uhu-cmppkg package1 package2' >&2
+	echo 'Exit status is 0 if they are essentially the same.' >&2
+	exit 1
+fi
+
+dir="$(mktemp -d /tmp/uhu-cmppkg.XXXXXX)"
+trap 'cd /; rm -rf "$dir"' EXIT
+
+dpkg -e "$1" "$dir/1"
+dpkg -e "$2" "$dir/2"
+
+cd "$dir"
+
+for i in 1 2; do
+	grep -v '^Version: ' <"$i/control" >"$i/control2"
+	rm "$i/control"
+	grep '^ ' <"$i/buildinfo" | rev | cut -d. -f2- | rev >"$i/buildinfo2"
+	rm "$i/buildinfo"
+	cut -c-54,65- "$i/stat" >"$i/stat2"
+	rm "$i/stat"
+done
+
+cd 1
+a="$(md5sum *)"
+cd ..
+cd 2
+b="$(md5sum *)"
+cd ..
+
+[ "$a" = "$b" ]
